@@ -1,4 +1,4 @@
-# wp-blue-sync-categories
+# blue-wp-categories
 Sync WordPress Categories from an external source into the WordPress.
 
 ## WordPress Categories
