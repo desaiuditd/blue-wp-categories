@@ -49,27 +49,62 @@ if ( ! class_exists( 'BWPC_Sync' ) ) {
 
         function sync_categories() {
 
+        	$default_category = get_option( 'default_category' );
+	        error_log(var_export($default_category, true));
+
 			$categories = $this->fetch_categories();
 
-			$flag = false;
+			$flag = true;
+
+			$new_terms = array();
 
 	        if ($categories && ! $categories['error']) {
 
 	        	foreach ($categories as $category) {
 
-                    if ( ! $this->does_category_exist( $category['id'] ) ) {
+	        		$term = $this->does_category_exist( $category['id'] );
 
+                    if ( ! $term ) {
                         $term = $this->create_category( $category, $categories );
-
 			        }
 
+			        if ( ! $term ) {
+                    	$flag = false;
+                    	return $flag;
+			        }
+
+			        array_push( $new_terms, $term );
 		        }
 
-		        $flag = true;
+		        error_log(var_export($new_terms, true));
+
+				$pending_terms = get_categories( array(
+					'taxonomy' => 'category',
+					'hide_empty' => false,
+					'fields' => 'ids',
+					'exclude' => $new_terms,
+				) );
+
+				foreach ( $pending_terms as $term ) {
+
+					error_log(var_export($term, true));
+
+					if ( $term == $default_category ) {
+						update_option( 'default_category', $new_terms[0] );
+					}
+
+					$isDeleted = wp_delete_term( $term, 'category' );
+
+					if ( true != $isDeleted ) {
+						$flag = false;
+						return $flag;
+					}
+				}
 
 	        } else {
 
 	        	error_log( var_export( $categories, true ) );
+	        	$flag = false;
 
 	        }
 
@@ -107,6 +142,7 @@ if ( ! class_exists( 'BWPC_Sync' ) ) {
         	$categories = get_categories( array(
 		        'taxonomy' => 'category',
 		        'hide_empty' => false,
+		        'fields' => 'ids',
 		        'meta_key' => '_blue_cat_id',
 		        'meta_value' => $external_id,
 	        ) );
@@ -129,7 +165,7 @@ if ( ! class_exists( 'BWPC_Sync' ) ) {
 		        // Check if parent exists or not.
 		        $parent = $this->does_category_exist( $category_to_create['parent_id'] );
 		        if ($parent) {
-			        $term = wp_insert_term( $category_to_create['name'], 'category', array( 'parent' => $parent->term_id ) );
+			        $term = wp_insert_term( $category_to_create['name'], 'category', array( 'parent' => $parent ) );
 			        add_term_meta( $term['term_id'], '_blue_cat_id', $category_to_create['id'] );
 		        } else {
 		        	// https://stackoverflow.com/a/2408945
@@ -143,7 +179,7 @@ if ( ! class_exists( 'BWPC_Sync' ) ) {
 
 		        		$parent = $this->create_category( $parent_cat, $external_categories );
 
-				        $term = wp_insert_term( $category_to_create['name'], 'category', array( 'parent' => $parent['term_id'] ) );
+				        $term = wp_insert_term( $category_to_create['name'], 'category', array( 'parent' => $parent ) );
 				        add_term_meta( $term['term_id'], '_blue_cat_id', $category_to_create['id'] );
 
 			        } else {
@@ -156,7 +192,7 @@ if ( ! class_exists( 'BWPC_Sync' ) ) {
 		        }
 	        }
 
-	        return $term;
+	        return $term['term_id'];
 		}
 
     }
