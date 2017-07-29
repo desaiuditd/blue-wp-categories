@@ -24,6 +24,8 @@ if ( ! class_exists( 'BWPC_Settings' ) ) {
 
 	        add_filter( 'plugin_action_links_' . BWPC_BASE_PATH, array( $this, 'plugin_actions' ), 10, 4 );
 
+	        add_action( 'admin_enqueue_scripts', array($this, 'enqueue_scripts'));
+
 	        add_action( 'admin_init', array( $this, 'settings_init' ) );
 
         }
@@ -32,6 +34,12 @@ if ( ! class_exists( 'BWPC_Settings' ) ) {
             $actions['settings'] = '<a href="' . admin_url( 'options-general.php#' . self::$section_slug . self::$api_endpoint_slug ) . '">' . __( 'Settings', BWPC_TEXT_DOMAIN ) . '</a>';
             return $actions;
         }
+
+	    function enqueue_scripts($hook) {
+		    if ( 'options-general.php' == $hook ) {
+			    wp_enqueue_script( 'bwpc-settings-script', plugins_url( '../ui/js/bwpc-settings.js', __FILE__ ), array('jquery'), time());
+		    }
+	    }
 
 	    function settings_init() {
 

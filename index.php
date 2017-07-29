@@ -122,7 +122,9 @@ if ( ! class_exists( 'Blue_WP_Categories' ) ) {
             include_once trailingslashit( BWPC_PATH ) . 'lib/class-bwpc-autoload.php';
 	        new BWPC_Autoload( trailingslashit( BWPC_PATH ) . 'lib/' );
             new BWPC_Autoload( trailingslashit( BWPC_PATH ) . 'settings/' );
+            new BWPC_Autoload( trailingslashit( BWPC_PATH ) . 'sync/' );
             new BWPC_Settings();
+            new BWPC_Sync();
         }
 
         /**
