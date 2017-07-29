@@ -14,12 +14,32 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'BWPC_Util' ) ) {
 
+	/**
+	 * Class BWPC_Util
+	 *
+	 * Contains all the utility methods.
+	 *
+	 * @since 0.1
+	 */
 	class BWPC_Util {
 
+		/**
+		 * @param $url
+		 *
+		 * @return mixed
+		 *
+		 * @since 0.1
+		 */
 		public static function is_valid_url($url) {
 			return filter_var($url, FILTER_VALIDATE_URL);
 		}
 
+		/**
+		 * @param $message
+		 * @param string $type
+		 *
+		 * @since 0.1
+		 */
 		public static function show_message( $message, $type = 'info' ) {
 			?>
 

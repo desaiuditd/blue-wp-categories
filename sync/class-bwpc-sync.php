@@ -31,6 +31,9 @@ if ( ! class_exists( 'BWPC_Sync' ) ) {
 	        add_action( 'wp_ajax_bwpc_sync_categories', array( $this, 'sync_categories_manual' ) );
         }
 
+	    /**
+	     * @since 0.1
+	     */
 		function sync_categories_manual() {
 
         	$isSynced = $this->sync_categories();
@@ -47,7 +50,12 @@ if ( ! class_exists( 'BWPC_Sync' ) ) {
 
 		}
 
-        function sync_categories() {
+	    /**
+	     * @return bool
+	     *
+	     * @since 0.1
+	     */
+	    public function sync_categories() {
 
         	$default_category = get_option( 'default_category' );
 
@@ -108,7 +116,12 @@ if ( ! class_exists( 'BWPC_Sync' ) ) {
 			return $flag;
         }
 
-		function fetch_categories() {
+	    /**
+	     * @return array|mixed|object
+	     *
+	     * @since 0.1
+	     */
+	    function fetch_categories() {
 
 			$api_url = get_option( BWPC_Settings::$section_slug . BWPC_Settings::$api_endpoint_slug );
 			$res = wp_safe_remote_get( $api_url );
@@ -134,7 +147,14 @@ if ( ! class_exists( 'BWPC_Sync' ) ) {
 			return $categories;
 		}
 
-		function does_category_exist( $external_id ) {
+	    /**
+	     * @param $external_id
+	     *
+	     * @return bool
+	     *
+	     * @since 0.1
+	     */
+	    function does_category_exist( $external_id ) {
 
         	$categories = get_categories( array(
 		        'taxonomy' => 'category',
@@ -149,7 +169,16 @@ if ( ! class_exists( 'BWPC_Sync' ) ) {
         	return $flag;
 		}
 
-		function create_category( $category_to_create, $external_categories ) {
+
+	    /**
+	     * @param $category_to_create
+	     * @param $external_categories
+	     *
+	     * @return mixed
+	     *
+	     * @since 0.1
+	     */
+	    function create_category( $category_to_create, $external_categories ) {
 
         	// No Parent. So directly create the category.
         	if ( NULL == $category_to_create['parent_id'] ) {
@@ -192,7 +221,14 @@ if ( ! class_exists( 'BWPC_Sync' ) ) {
 	        return $term['term_id'];
 		}
 
-		function check_parent( $wp_term, $external_category ) {
+
+	    /**
+	     * @param $wp_term
+	     * @param $external_category
+	     *
+	     * @since 0.1
+	     */
+	    function check_parent( $wp_term, $external_category ) {
         	if ( $external_category['parent_id'] == NULL ) {
         		$parent = 0;
 	        } else {

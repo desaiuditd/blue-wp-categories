@@ -14,13 +14,35 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'BWPC_Settings' ) ) {
 
+	/**
+	 * Class BWPC_Settings
+	 *
+	 * Handles all the admin settings and its UI.
+	 *
+	 * @since 0.1
+	 */
     class BWPC_Settings {
 
+	    /**
+	     * @var string
+	     */
 	    static $section_slug = 'bwpc_';
+	    /**
+	     * @var string
+	     */
 	    static $api_endpoint_slug = 'api_endpoint';
+	    /**
+	     * @var string
+	     */
 	    static $manual_sync_slug = 'manual_sync';
 
-        function __construct() {
+
+	    /**
+	     * BWPC_Settings constructor.
+         *
+         * @since 0.1
+	     */
+	    function __construct() {
 
 	        add_filter( 'plugin_action_links_' . BWPC_BASE_PATH, array( $this, 'plugin_actions' ), 10, 4 );
 
@@ -30,17 +52,35 @@ if ( ! class_exists( 'BWPC_Settings' ) ) {
 
         }
 
-        function plugin_actions( $actions, $plugin_file, $plugin_data, $context ) {
+	    /**
+	     * @param $actions
+	     * @param $plugin_file
+	     * @param $plugin_data
+	     * @param $context
+	     *
+	     * @return mixed
+         *
+         * @since 0.1
+	     */
+	    function plugin_actions( $actions, $plugin_file, $plugin_data, $context ) {
             $actions['settings'] = '<a href="' . admin_url( 'options-general.php#' . self::$section_slug . self::$api_endpoint_slug ) . '">' . __( 'Settings', BWPC_TEXT_DOMAIN ) . '</a>';
             return $actions;
         }
 
+	    /**
+	     * @param $hook
+         *
+         * @since 0.1
+	     */
 	    function enqueue_scripts($hook) {
 		    if ( 'options-general.php' == $hook ) {
 			    wp_enqueue_script( 'bwpc-settings-script', plugins_url( '../ui/js/bwpc-settings.js', __FILE__ ), array('jquery'), time());
 		    }
 	    }
 
+	    /**
+	     * @since 0.1
+	     */
 	    function settings_init() {
 
 		    add_settings_section( self::$section_slug . 'section', __( 'Blue WordPress Category Sync', BWPC_TEXT_DOMAIN ), array( $this, 'bwpc_section_callback' ), 'general' );
@@ -52,7 +92,10 @@ if ( ! class_exists( 'BWPC_Settings' ) ) {
 		    add_settings_field( self::$section_slug . self::$manual_sync_slug, __( 'Sync Categories', BWPC_TEXT_DOMAIN ), array( $this, 'manual_sync_callback' ), 'general', self::$section_slug . 'section' );
 	    }
 
-		function bwpc_section_callback() {
+	    /**
+	     * @since 0.1
+	     */
+	    function bwpc_section_callback() {
 			?>
 			<p class="description">
 				<?php _e( 'This section lets you control WordPress Category sync from external source.', BWPC_TEXT_DOMAIN ); ?><br />
@@ -61,12 +104,23 @@ if ( ! class_exists( 'BWPC_Settings' ) ) {
 			<?php
 		}
 
+	    /**
+	     * @since 0.1
+	     */
 	    function endpoint_url_callback() {
 		    ?>
 		    <input type="url" class="regular-text code" name="<?php echo self::$section_slug . self::$api_endpoint_slug; ?>" id="<?php echo self::$section_slug . self::$api_endpoint_slug; ?>" value="<?php echo get_option( self::$section_slug . self::$api_endpoint_slug ); ?>" />
 		    <?php
 	    }
 
+	    /**
+	     * @param $value
+	     * @param $option
+	     *
+	     * @return mixed
+         *
+         * @since 0.1
+	     */
 	    function sanitize_endpoint_url( $value, $option ) {
 
         	if ( ! BWPC_Util::is_valid_url( $value ) ) {
@@ -76,6 +130,9 @@ if ( ! class_exists( 'BWPC_Settings' ) ) {
 		    return $value;
 	    }
 
+	    /**
+	     * @since 0.1
+	     */
 	    function manual_sync_callback() {
 		    ?>
 		    <input type="button" name="bwpc-sync" id="bwpc-sync" class="button button-primary" value="Sync Categories" />
