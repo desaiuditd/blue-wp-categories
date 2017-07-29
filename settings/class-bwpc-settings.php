@@ -79,6 +79,9 @@ if ( ! class_exists( 'BWPC_Settings' ) ) {
 	    function manual_sync_callback() {
 		    ?>
 		    <input type="button" name="bwpc-sync" id="bwpc-sync" class="button button-primary" value="Sync Categories" />
+		    <div id="bwpc-sync-spinner" style="margin-top: 5px;" class="spinner"></div>
+            <p id="bwpc-sync-msg" style="padding: 5px; background-color: lightgreen; color: green; display: none;"></p>
+            <p id="bwpc-sync-error" style="padding: 5px; background-color: lightpink; color: red; display: none;"></p>
 		    <?php
 	    }
 
