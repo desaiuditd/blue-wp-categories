@@ -120,11 +120,9 @@ if ( ! class_exists( 'Blue_WP_Categories' ) ) {
          */
         private function includes() {
             include_once trailingslashit( BWPC_PATH ) . 'lib/class-bwpc-autoload.php';
-//            new WM_Autoload( trailingslashit( BWPC_PATH ) . 'revision/' );
-//            new WM_Autoload( trailingslashit( BWPC_PATH ) . 'settings/' );
-//            new WM_Settings();
-//            new WM_Admin();
-//            new WM_Revision();
+	        new BWPC_Autoload( trailingslashit( BWPC_PATH ) . 'lib/' );
+            new BWPC_Autoload( trailingslashit( BWPC_PATH ) . 'settings/' );
+            new BWPC_Settings();
         }
 
         /**
@@ -157,8 +155,48 @@ if ( ! class_exists( 'Blue_WP_Categories' ) ) {
         }
 
         function hooks() {
+        	// https://codex.wordpress.org/Function_Reference/get_current_screen
+	        // current_screen is used because we need to identify the screen.
+	        // And it's available after current_screen
+	        // Also we need Settings API functions. And they are available after admin_init.
+	        // Hence.
+            add_action( 'current_screen', array( $this, 'check_api_endpoint' ) );
 
+	        add_action( 'admin_notices', array( $this, 'display_admin_notice' ) );
         }
+
+        function check_api_endpoint() {
+			$url = get_option( BWPC_Settings::$section_slug . BWPC_Settings::$api_endpoint_slug );
+
+	        // check for settings page - need this in conditional further down
+	        global $current_screen;
+
+			if ( ! BWPC_Util::is_valid_url($url) && 'options' != $current_screen->id && 'options-general' != $current_screen->id ) {
+				add_settings_error( 'bwpc-errors', 'bwpc_errors', sprintf( __( 'Blue WordPress Categories: You need to fill valid URL for external API Endpoint URL. %s.', BWPC_TEXT_DOMAIN ), '<a href="' . admin_url( 'options-general.php#' . BWPC_Settings::$section_slug . BWPC_Settings::$api_endpoint_slug ) . '">' . __( 'Fix this', BWPC_TEXT_DOMAIN ) . '</a>' ) );
+			}
+        }
+
+		function display_admin_notice() {
+
+			// check for our settings page - need this in conditional further down
+			global $current_screen;
+
+			if ( 'options-general' == $current_screen->id ) {
+				return;
+			}
+
+			// collect setting errors/notices: //http://codex.wordpress.org/Function_Reference/get_settings_errors
+			$set_errors = get_settings_errors();
+
+			//display admin message only for the admin to see, only when setting errors/notices are returned!
+			if ( current_user_can( 'manage_options' ) && ! empty( $set_errors ) ) {
+				// there maybe more than one so run a foreach loop.
+				foreach ( $set_errors as $set_error ) {
+					// set the title attribute to match the error "setting title" - need this in js file
+					BWPC_Util::show_message( '<p><strong>' . $set_error['message'] . '</strong></p>', 'error' );
+				}
+			}
+		}
 
     }
 
