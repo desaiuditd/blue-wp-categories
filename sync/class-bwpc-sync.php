@@ -50,7 +50,6 @@ if ( ! class_exists( 'BWPC_Sync' ) ) {
         function sync_categories() {
 
         	$default_category = get_option( 'default_category' );
-	        error_log(var_export($default_category, true));
 
 			$categories = $this->fetch_categories();
 
@@ -66,7 +65,9 @@ if ( ! class_exists( 'BWPC_Sync' ) ) {
 
                     if ( ! $term ) {
                         $term = $this->create_category( $category, $categories );
-			        }
+			        } else {
+                    	$this->check_parent( $term, $category );
+                    }
 
 			        if ( ! $term ) {
                     	$flag = false;
@@ -76,8 +77,6 @@ if ( ! class_exists( 'BWPC_Sync' ) ) {
 			        array_push( $new_terms, $term );
 		        }
 
-		        error_log(var_export($new_terms, true));
-
 				$pending_terms = get_categories( array(
 					'taxonomy' => 'category',
 					'hide_empty' => false,
@@ -86,8 +85,6 @@ if ( ! class_exists( 'BWPC_Sync' ) ) {
 				) );
 
 				foreach ( $pending_terms as $term ) {
-
-					error_log(var_export($term, true));
 
 					if ( $term == $default_category ) {
 						update_option( 'default_category', $new_terms[0] );
@@ -152,7 +149,7 @@ if ( ! class_exists( 'BWPC_Sync' ) ) {
         	return $flag;
 		}
 
-		function create_category($category_to_create, $external_categories) {
+		function create_category( $category_to_create, $external_categories ) {
 
         	// No Parent. So directly create the category.
         	if ( NULL == $category_to_create['parent_id'] ) {
@@ -193,6 +190,16 @@ if ( ! class_exists( 'BWPC_Sync' ) ) {
 	        }
 
 	        return $term['term_id'];
+		}
+
+		function check_parent( $wp_term, $external_category ) {
+        	if ( $external_category['parent_id'] == NULL ) {
+        		$parent = 0;
+	        } else {
+		        $parent = $this->does_category_exist( $external_category['parent_id'] );
+	        }
+
+			wp_update_term( $wp_term, 'category', array( 'parent' => $parent ) );
 		}
 
     }
