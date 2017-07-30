@@ -37,6 +37,9 @@ if ( ! class_exists( 'BWPC_Sync_Cron' ) ) {
 			register_deactivation_hook( __FILE__, array( $this, 'unschedule_cron_hook' ) );
 		}
 
+		/**
+		 * @since 0.1
+		 */
 		function setup_cron_schedule() {
 			add_action( 'bwpc_sync_cron_hook', array( $this, 'execute_cron' ) );
 
@@ -45,6 +48,13 @@ if ( ! class_exists( 'BWPC_Sync_Cron' ) ) {
 			}
 		}
 
+		/**
+		 * @param $schedules
+		 *
+		 * @return mixed
+		 *
+		 * @since 0.1
+		 */
 		function add_cron_interval( $schedules ) {
 			$schedules['halfhourly'] = array(
 				'interval' => 1800, // 30 minutes * 60 seconds = 1800 seconds
@@ -54,11 +64,17 @@ if ( ! class_exists( 'BWPC_Sync_Cron' ) ) {
 			return $schedules;
 		}
 
+		/**
+		 * @since 0.1
+		 */
 		function execute_cron() {
 			$isSynced = bwpc()->classes['sync']->sync_categories();
 			error_log( 'Blue WordPress Categories Cron: ' . var_export( $isSynced, true ) );
 		}
 
+		/**
+		 * @since 0.1
+		 */
 		function unschedule_cron_hook() {
 			wp_clear_scheduled_hook( 'bwpc_sync_cron_hook' );
 		}
