@@ -35,6 +35,10 @@ if ( ! class_exists( 'BWPC_Settings' ) ) {
 	     * @var string
 	     */
 	    static $manual_sync_slug = 'manual_sync';
+	    /**
+	     * @var string
+	     */
+	    static $disable_manage_categories = 'disable_manage_cat';
 
 
 	    /**
@@ -89,6 +93,9 @@ if ( ! class_exists( 'BWPC_Settings' ) ) {
 		    register_setting( 'general', self::$section_slug . self::$api_endpoint_slug );
 		    add_filter( 'sanitize_option_' . self::$section_slug . self::$api_endpoint_slug, array( $this, 'sanitize_endpoint_url' ), 10, 2 );
 
+		    add_settings_field( self::$section_slug . self::$disable_manage_categories, __( 'Disable Manage Categories', BWPC_TEXT_DOMAIN ), array( $this, 'disable_manage_cat_callback' ), 'general', self::$section_slug . 'section' );
+		    register_setting( 'general', self::$section_slug . self::$disable_manage_categories );
+
 		    add_settings_field( self::$section_slug . self::$manual_sync_slug, __( 'Sync Categories', BWPC_TEXT_DOMAIN ), array( $this, 'manual_sync_callback' ), 'general', self::$section_slug . 'section' );
 	    }
 
@@ -112,6 +119,18 @@ if ( ! class_exists( 'BWPC_Settings' ) ) {
 		    <input type="url" class="regular-text code" name="<?php echo self::$section_slug . self::$api_endpoint_slug; ?>" id="<?php echo self::$section_slug . self::$api_endpoint_slug; ?>" value="<?php echo get_option( self::$section_slug . self::$api_endpoint_slug ); ?>" />
 		    <?php
 	    }
+
+	    /**
+	     * @since 0.1
+	     */
+	    function disable_manage_cat_callback() {
+		    ?>
+            <label for="<?php echo self::$section_slug . self::$disable_manage_categories; ?>">
+                <input type="checkbox" name="<?php echo self::$section_slug . self::$disable_manage_categories; ?>" id="<?php echo self::$section_slug . self::$disable_manage_categories; ?>" value="1" <?php checked( get_option( self::$section_slug . self::$disable_manage_categories ) ) ?> />
+                Check this option to disable UI for managing (insert/update/delete) categories.
+            </label>
+            <?php
+        }
 
 	    /**
 	     * @param $value

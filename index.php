@@ -240,7 +240,13 @@ if ( ! class_exists( 'Blue_WP_Categories' ) ) {
 		 * @since 0.1
 		 */
 		function filter_caps($all_caps, $required_caps, $args, $user) {
-        	$all_caps['manage_categories'] = false;
+
+			$disableManageCat = get_option( BWPC_Settings::$section_slug . BWPC_Settings::$disable_manage_categories );
+
+			if ( $disableManageCat ) {
+				$all_caps['manage_categories'] = false;
+			}
+
 			return $all_caps;
 		}
 
