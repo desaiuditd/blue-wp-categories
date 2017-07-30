@@ -3,6 +3,50 @@ Sync WordPress Categories from an external source into the WordPress.
 
 ## WordPress Categories
 
+### Installation
+
+- [Download](https://github.com/desaiuditd/blue-wp-categories/archive/master.zip) the plugin from the Github.
+- Go to `Plugins > Add New > Upload Plugin`.
+- Upload the zip.
+- Alternatively, you can unzip the plugin zip file and upload it to the plugins folder of your WordPress installation (`wp-content/plugins/` directory of your WordPress installation).
+- Activate it through the `Plugins` section.
+
+### Setup
+
+- After installing / activating the plugin, go to `Settings > General`.
+- In the `Blue WordPress Category Sync` section, fill in the valid url of external API endpoint for Categories.
+- This step is manadatory to begin the category sync.
+- The Cron job to sync categories every 30 minutes, will be activated, when the plugin is activated. The cron will be disabled when the plugin is deactivated.
+
+### Work Left in Progress
+
+There are few edge cases to cover in this code. E.g.:
+
+- If you disable manage category from the options, it disables tags as well, along with the categories. We should ideally seperate those two.
+- Better on page documentation to let the user know what plugin does, and how it is useful.
+
+### Test Feedback
+
+The test was very well planned and challenging. It requires all major concepts and knowledge of WordPress for the developer to know e.g.,:
+
+- Plugin Development
+- Hooks / Action
+- Terms / Taxonomy and their relationships
+- Term Meta
+- Roles and Capabilities
+- Cron
+
+It was very fun completing this test.
+
+### Duration to complete the Test
+
+Approximately 4-5 hours that includes following:
+
+- Complete development time to implement all the requirement.
+- Testing for the code
+- WordPress Website Deployment on AWS Server to setup a live demo for the WordPress plugin.
+- Local Development Setup on Vagrant
+
 ### Summary
 
 The purpose of this exercise is for us to get a sense of how you would approach designing and implementing a simple WordPress integration before we get you in for an interview. We’re avoiding tricky algorithmic tests in favor of something that shows how you approach problems and organise a codebase.
