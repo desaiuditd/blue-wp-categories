@@ -201,7 +201,9 @@ if ( ! class_exists( 'BWPC_Sync' ) ) {
 			        });
 
 		        	if ( count( $parent_cat ) > 0 ) {
-		        		$parent_cat = $parent_cat[0];
+		        		// get the first element from the associative array.
+				        // https://stackoverflow.com/questions/1617157/how-to-get-the-first-item-from-an-associative-php-array
+		        		$parent_cat = reset( $parent_cat );
 
 		        		$parent = $this->create_category( $parent_cat, $external_categories );
 
