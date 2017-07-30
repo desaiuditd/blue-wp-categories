@@ -32,6 +32,8 @@ if ( ! class_exists( 'Blue_WP_Categories' ) ) {
          */
         private static $instance;
 
+		public $classes;
+
         /**
          * Main Blue_WP_Categories Instance
          *
@@ -46,6 +48,7 @@ if ( ! class_exists( 'Blue_WP_Categories' ) ) {
         public static function instance() {
             if ( ! isset( self::$instance ) && ! ( self::$instance instanceof Blue_WP_Categories ) ) {
                 self::$instance = new Blue_WP_Categories;
+                self::$instance->classes = array();
                 self::$instance->setup_constants();
                 self::$instance->includes();
                 self::$instance->load_textdomain();
@@ -120,11 +123,15 @@ if ( ! class_exists( 'Blue_WP_Categories' ) ) {
          */
         private function includes() {
             include_once trailingslashit( BWPC_PATH ) . 'lib/class-bwpc-autoload.php';
-	        new BWPC_Autoload( trailingslashit( BWPC_PATH ) . 'lib/' );
+
+            new BWPC_Autoload( trailingslashit( BWPC_PATH ) . 'lib/' );
             new BWPC_Autoload( trailingslashit( BWPC_PATH ) . 'settings/' );
             new BWPC_Autoload( trailingslashit( BWPC_PATH ) . 'sync/' );
-            new BWPC_Settings();
-            new BWPC_Sync();
+            new BWPC_Autoload( trailingslashit( BWPC_PATH ) . 'cron/' );
+
+	        self::$instance->classes['settings'] = new BWPC_Settings();
+	        self::$instance->classes['sync'] = new BWPC_Sync();
+	        self::$instance->classes['cron'] = new BWPC_Sync_Cron();
         }
 
         /**
