@@ -22,7 +22,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! class_exists( 'Blue_WP_Categories' ) ) {
 
-    class Blue_WP_Categories {
+	/**
+	 * Class Blue_WP_Categories
+	 *
+	 * @since 0.1
+	 */
+	class Blue_WP_Categories {
 
         /** Singleton *************************************************************/
 
@@ -32,6 +37,11 @@ if ( ! class_exists( 'Blue_WP_Categories' ) ) {
          */
         private static $instance;
 
+		/**
+		 * @var
+		 *
+		 * @since 0.1
+		 */
 		public $classes;
 
         /**
@@ -163,7 +173,10 @@ if ( ! class_exists( 'Blue_WP_Categories' ) ) {
             }
         }
 
-        function hooks() {
+		/**
+		 * @since 0.1
+		 */
+		function hooks() {
         	// https://codex.wordpress.org/Function_Reference/get_current_screen
 	        // current_screen is used because we need to identify the screen.
 	        // And it's available after current_screen
@@ -172,9 +185,15 @@ if ( ! class_exists( 'Blue_WP_Categories' ) ) {
             add_action( 'current_screen', array( $this, 'check_api_endpoint' ) );
 
 	        add_action( 'admin_notices', array( $this, 'display_admin_notice' ) );
+
+			// Disable Add Category within WordPress
+	        add_filter( 'user_has_cap', array( $this, 'filter_caps' ), 999, 4 );
         }
 
-        function check_api_endpoint() {
+		/**
+		 * @since 0.1
+		 */
+		function check_api_endpoint() {
 			$url = get_option( BWPC_Settings::$section_slug . BWPC_Settings::$api_endpoint_slug );
 
 	        // check for settings page - need this in conditional further down
@@ -185,6 +204,9 @@ if ( ! class_exists( 'Blue_WP_Categories' ) ) {
 			}
         }
 
+		/**
+		 * @since 0.1
+		 */
 		function display_admin_notice() {
 
 			// check for our settings page - need this in conditional further down
@@ -205,6 +227,21 @@ if ( ! class_exists( 'Blue_WP_Categories' ) ) {
 					BWPC_Util::show_message( '<p><strong>' . $set_error['message'] . '</strong></p>', 'error' );
 				}
 			}
+		}
+
+		/**
+		 * @param $all_caps
+		 * @param $required_caps
+		 * @param $args
+		 * @param $user
+		 *
+		 * @return mixed
+		 *
+		 * @since 0.1
+		 */
+		function filter_caps($all_caps, $required_caps, $args, $user) {
+        	$all_caps['manage_categories'] = false;
+			return $all_caps;
 		}
 
     }
